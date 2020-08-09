@@ -1,0 +1,66 @@
+---
+- name: Mikrotik RouterOS Security Automation 
+  hosts: routers
+  vars:
+    available_from: "192.168.169.253,192.168.169.254"
+    interfaces:
+    - ether4
+    - ether5
+  tasks:
+  - name: Menonaktifkan RouterOS Mac-Access (MAC-Telnet, MAC-Winbox dan MAC-Ping)
+    routeros_command:
+       commands:
+       - /tool mac-server set allowed-interface-list=none 
+       - /tool mac-server mac-winbox set allowed-interface-list=none
+       - /tool mac-server ping set enabled=no
+
+  - name: Menonaktifkan Neighbor Discovery pada seluruh interfaces
+    routeros_command:
+       commands: /ip neighbor discovery-settings set discover-interface-list=none
+
+  - name: Menonaktifkan Bandwidth Test (Btest) Server
+    routeros_command:
+       commands: /tool bandwidth-server set enabled=no 
+
+  - name: Menonaktifkan DNS Cache
+    routeros_command:
+      commands: /ip dns set allow-remote-requests=no
+
+  - name: Menonaktifkan Client Services
+    routeros_command:
+      commands:
+      - /ip proxy set enabled=no
+      - /ip socks set enabled=no
+      - /ip cloud set ddns-enabled=no update-time=no
+
+  - name: Mengaktifkan Strong Crypto SSH
+    routeros_command:
+      commands: /ip ssh set strong-crypto=yes
+
+  - name: Menonaktifkan Interface dari Router
+    routeros_command:
+       commands: /interface set [ find name={{ item }} ] disabled=yes
+    with_items: "{{ interfaces }}"    
+
+  - name: Menambahkan Schedule RouterOS Auto-Upgrade
+    routeros_command:
+      commands: /system scheduler add name=UPGRADE_ROUTEROS start-date=Aug/01/2020 on-event="/system package update check-for-updates once;:delay 3s;:if ([/system package update get status] = \"New version is available\") do={ /system package update install }" interval=1d start-time=06:40:00
+
+  - name: Menonaktifkan IP Service
+    routeros_command:
+      commands: /ip service disable {{ item }}
+    with_items:
+    - api
+    - api-ssl
+    - ftp
+    - telnet
+    - www
+    - www-ssl
+
+  - name: Mengatur available from untuk service SSH dan Winbox
+    routeros_command:
+      commands:
+      - /ip service set [ find name={{ item }} ] address="{{ available_from }}"
+    with_items:
+    - winbox
+    - ssh

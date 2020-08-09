@@ -1,0 +1,7 @@
+---
+- name: Manajemen User RouterOS
+  hosts: routers
+  tasks:
+    - name: Menghapus user admin
+      routeros_command:
+        commands: /user remove admin
