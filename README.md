@@ -13,3 +13,5 @@ pada setiap Router adalah sebagai berikut:
 8. Mengaktifkan RouterOS Auto-Upgrade menggunakan system scheduler agar terjadwal untuk beroperasi setiap hari pada jam 01:00:00.
 9. Menonaktifkan IP Service api, api-ssl, ftp, telnet, www dan www-ssl.
 10. Membatasi akses pada IP Service Winbox dan SSH agar hanya dapat diakses dari alamat IP tertentu, sebagai contoh 192.168.169.253 dan 192.168.169.254.
+
+File materi dan video rekaman webinar yang menjelaskan penggunakan dari Ansible Playbook ini dapat diakses di alamat https://iputuhariyadi.net/2020/08/06/mikrotik-routeros-security-automation-with-ansible/
